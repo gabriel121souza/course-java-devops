@@ -1,0 +1,44 @@
+version: '3.9'
+services:
+  db:
+    image: mysql:8.0.29
+    # MUDANÇA 1: Dizer ao MySQL para INICIAR na porta 3308.
+    command: mysqld --default-authentication-plugin=mysql_native_password --port=3308
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: curso_java_spring
+    ports:
+      # O mapeamento agora está correto: porta 3308 do PC para a 3308 do container.
+      - "3308:3308"
+    networks:
+      - spacegtech-network
+    healthcheck:
+      # MUDANÇA 2: Dizer ao healthcheck para VERIFICAR na porta 3308.
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "--port=3308"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rest-with-spring-boot-and-java-spacegtech:
+    build: .
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      # A URL de conexão já está correta, apontando para a 3308.
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3308/curso_java_spring?useTimezone=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        # Esta condição agora funcionará, pois o healthcheck foi corrigido.
+        condition: service_healthy
+    networks:
+      - spacegtech-network
+
+networks:
+  spacegtech-network:
+    driver: bridge
