@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>br.com.erudio</groupId>
 	<artifactId>rest-with-spring-boot-and-java-spacegtech</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1-snapshot</version>
 	<name>rest-with-spring-boot-and-java-spacegtech</name>
 	<properties>
 		<java.version>19</java.version>
